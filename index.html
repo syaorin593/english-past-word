@@ -3,60 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>英語過去形クエスト</title>
+    <title>英語過去形クエスト - 完全版</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=M+PLUS+Rounded+1c:wght@400;700&display=swap" rel="stylesheet">
     
     <style>
-        /* CSSスタイル設定 */
-        body {
-            font-family: 'M PLUS Rounded 1c', sans-serif;
-            touch-action: manipulation; /* スマホでのタップ遅延防止 */
-        }
-        .title-font {
-            font-family: 'Dela Gothic One', cursive;
+        body { font-family: 'M PLUS Rounded 1c', sans-serif; touch-action: manipulation; }
+        .title-font { font-family: 'Dela Gothic One', cursive; }
+        .star-bg { background: linear-gradient(135deg, #0f172a 0%, #312e81 50%, #1e1b4b 100%); }
+        .game-card { background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3); }
+        .choice-btn { transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1); touch-action: manipulation; }
+        .choice-btn:active { transform: translateY(2px); border-bottom-width: 0px; margin-top: 4px; }
+        
+        /* 図鑑用のスタイル */
+        .zukan-item { transition: all 0.3s ease; }
+        .zukan-locked { background-color: rgba(0,0,0,0.3); color: rgba(255,255,255,0.2); border: 2px dashed rgba(255,255,255,0.1); }
+        .zukan-unlocked { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; transform: scale(1); border: 2px solid #34d399; }
+        .zukan-new { animation: pulse-glow 2s infinite; }
+
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(52, 211, 153, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0); }
         }
 
-        /* 背景設定 */
-        .star-bg {
-            background: linear-gradient(135deg, #0f172a 0%, #312e81 50%, #1e1b4b 100%);
-        }
-
-        /* カードとボタンのデザイン */
-        .game-card {
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
-        }
-
-        .choice-btn {
-            transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
-            touch-action: manipulation;
-        }
-        .choice-btn:active {
-            transform: translateY(2px);
-            border-bottom-width: 0px;
-            margin-top: 4px; /* 位置調整 */
-        }
-
-        /* アニメーション定義 */
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-8px); }
-            75% { transform: translateX(8px); }
-        }
-        .animate-shake {
-            animation: shake 0.3s ease-in-out;
-        }
-
-        @keyframes pop {
-            0% { transform: scale(0.8); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-        .animate-pop {
-            animation: pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        /* Tailwind読み込み前のちらつき防止 */
+        @keyframes pop { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        .animate-pop { animation: pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .hidden { display: none !important; }
     </style>
 </head>
@@ -66,13 +38,14 @@
 
         <div id="screen-start" class="w-full text-center animate-pop">
             <div class="text-7xl mb-4 drop-shadow-lg">🏰</div>
-            <h1 class="title-font text-4xl md:text-5xl mb-6 text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 to-yellow-500 drop-shadow-sm leading-tight pb-2">
+            <h1 class="title-font text-4xl md:text-5xl mb-2 text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 to-yellow-500 drop-shadow-sm leading-tight pb-2">
                 英語過去形<br>クエスト
             </h1>
+            <p class="text-indigo-200 text-sm mb-6 font-bold">New Horizon 1年対応版</p>
             
-            <div class="bg-white/10 backdrop-blur-md rounded-3xl p-6 mb-8 border border-white/10">
+            <div class="bg-white/10 backdrop-blur-md rounded-3xl p-6 mb-6 border border-white/10">
                 <h2 class="text-indigo-200 font-bold mb-4">出題モードを選択</h2>
-                <div class="space-y-4">
+                <div class="space-y-3">
                     <button onclick="selectMode('choice')" class="w-full py-4 bg-gradient-to-r from-cyan-500 to-blue-600 font-bold rounded-2xl choice-btn text-xl shadow-lg border-b-4 border-blue-800">
                         🎯 4択モード
                     </button>
@@ -85,23 +58,39 @@
                 </div>
             </div>
 
-            <button onclick="showRanking()" class="text-yellow-300 font-bold hover:underline py-2">🏆 ランキングを見る</button>
+            <div class="flex justify-center gap-4">
+                <button onclick="showRanking()" class="text-yellow-300 font-bold hover:underline py-2">🏆 ランキング</button>
+                <button onclick="openZukan()" class="text-emerald-300 font-bold hover:underline py-2">📖 単語図鑑</button>
+            </div>
         </div>
 
         <div id="screen-difficulty" class="w-full max-w-md text-center hidden animate-pop">
             <h2 class="title-font text-3xl mb-6">難易度を選べ！</h2>
             <div class="space-y-4">
                 <button onclick="startGame('easy')" class="w-full py-4 bg-emerald-500 hover:bg-emerald-400 font-bold rounded-2xl choice-btn border-b-4 border-emerald-700 text-lg">
-                    🌱 初級 (基本点 30)
+                    🌱 初級 (基本30点)
                 </button>
                 <button onclick="startGame('normal')" class="w-full py-4 bg-amber-500 hover:bg-amber-400 font-bold rounded-2xl choice-btn border-b-4 border-amber-700 text-lg">
-                    ⚔️ 中級 (基本点 40)
+                    ⚔️ 中級 (基本40点)
                 </button>
                 <button onclick="startGame('hard')" class="w-full py-4 bg-red-600 hover:bg-red-500 font-bold rounded-2xl choice-btn border-b-4 border-red-800 text-lg">
-                    💀 上級 (基本点 50)
+                    💀 上級 (基本50点)
                 </button>
             </div>
             <button onclick="backToStart()" class="mt-8 text-indigo-200 hover:text-white py-2">↩ 戻る</button>
+        </div>
+
+        <div id="screen-zukan" class="w-full hidden animate-pop">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="title-font text-2xl text-emerald-300">📖 魔導書 (単語図鑑)</h2>
+                <div class="text-right">
+                    <span class="text-xs text-indigo-200 block">収集率</span>
+                    <span id="collection-rate" class="text-2xl font-bold">0%</span>
+                </div>
+            </div>
+            <div id="zukan-grid" class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-6 overflow-y-auto max-h-[60vh] p-2 bg-black/20 rounded-xl">
+                </div>
+            <button onclick="backToStart()" class="w-full py-3 bg-white/20 font-bold rounded-xl hover:bg-white/30">↩ タイトルへ戻る</button>
         </div>
 
         <div id="screen-game" class="w-full max-w-md hidden">
@@ -134,6 +123,9 @@
             <div class="text-center w-full max-w-sm p-6 animate-pop">
                 <div id="fb-icon" class="text-8xl mb-4 filter drop-shadow-lg">✨</div>
                 <h2 id="fb-text" class="title-font text-4xl text-white mb-2">Great!</h2>
+                
+                <div id="zukan-badge" class="hidden inline-block bg-emerald-500 text-white font-bold px-4 py-1 rounded-full text-sm mb-2 animate-bounce">📖 図鑑登録！</div>
+                
                 <p id="fb-score-detail" class="text-yellow-300 font-bold mb-4"></p>
 
                 <div id="fb-correct-box" class="hidden bg-red-500/20 border-2 border-red-500 rounded-xl p-4 mb-6">
@@ -146,13 +138,21 @@
         </div>
 
         <div id="screen-result" class="w-full max-w-md text-center hidden animate-pop">
-            <div class="text-8xl mb-4">🏆</div>
-            <h2 class="title-font text-3xl mb-2 text-white">クエスト完了！</h2>
+            <div class="mb-4 relative inline-block">
+                <div class="text-8xl">🏆</div>
+                <div id="result-rank-badge" class="absolute -bottom-2 -right-2 bg-yellow-400 text-black font-bold rounded-full w-12 h-12 flex items-center justify-center border-4 border-white text-xl shadow-lg">S</div>
+            </div>
+            
+            <h2 class="title-font text-2xl mb-1 text-white">クエスト完了！</h2>
+            <p id="result-title" class="text-yellow-300 text-xl font-bold mb-6">称号：時空の覇者</p>
             
             <div class="bg-white/10 backdrop-blur-md rounded-2xl p-6 mb-6 border border-white/10">
                 <p class="text-xs text-indigo-200">今回のスコア</p>
                 <p id="final-score" class="text-5xl font-bold text-yellow-300">0</p>
-                <p id="final-combo" class="text-sm text-orange-300 mt-2">最大コンボ: 0</p>
+                <div class="flex justify-between mt-2 text-sm text-indigo-200">
+                    <span id="final-combo">Max Combo: 0</span>
+                    <span id="final-new-words" class="text-emerald-400">図鑑: +0</span>
+                </div>
             </div>
 
             <div class="flex gap-2 mb-6">
@@ -161,7 +161,7 @@
             </div>
 
             <div class="space-y-3">
-                <button onclick="shareResult()" class="w-full py-3 bg-blue-500 font-bold rounded-xl border-b-4 border-blue-700 active:border-b-0 active:translate-y-1">📋 結果をコピーして共有</button>
+                <button onclick="shareResult()" class="w-full py-3 bg-blue-500 font-bold rounded-xl border-b-4 border-blue-700 active:border-b-0 active:translate-y-1">📋 結果をコピー</button>
                 <button onclick="backToStart()" class="w-full py-3 bg-white/20 font-bold rounded-xl active:bg-white/30">🏠 タイトルへ</button>
             </div>
 
@@ -175,34 +175,37 @@
 
     <script>
         /* =========================================
-           JavaScriptロジック
+           単語データ (ID付き)
            ========================================= */
-        
-        // 単語データ
         const verbsData = [
-            { base: 'play', past: 'played', meaning: '遊ぶ' },
-            { base: 'watch', past: 'watched', meaning: '見る' },
-            { base: 'cook', past: 'cooked', meaning: '料理する' },
-            { base: 'study', past: 'studied', meaning: '勉強する' },
-            { base: 'use', past: 'used', meaning: '使う' },
-            { base: 'visit', past: 'visited', meaning: '訪れる' },
-            { base: 'stop', past: 'stopped', meaning: '止まる' },
-            { base: 'go', past: 'went', meaning: '行く' },
-            { base: 'see', past: 'saw', meaning: '見る・会う' },
-            { base: 'eat', past: 'ate', meaning: '食べる' },
-            { base: 'have', past: 'had', meaning: '持つ' },
-            { base: 'buy', past: 'bought', meaning: '買う' },
-            { base: 'make', past: 'made', meaning: '作る' },
-            { base: 'come', past: 'came', meaning: '来る' },
-            { base: 'write', past: 'wrote', meaning: '書く' },
-            { base: 'read', past: 'read', meaning: '読む' },
-            { base: 'run', past: 'ran', meaning: '走る' },
-            { base: 'swim', past: 'swam', meaning: '泳ぐ' },
-            { base: 'know', past: 'knew', meaning: '知っている' },
-            { base: 'say', past: 'said', meaning: '言う' }
+            { id: 'play', base: 'play', past: 'played', meaning: '遊ぶ' },
+            { id: 'watch', base: 'watch', past: 'watched', meaning: '見る' },
+            { id: 'cook', base: 'cook', past: 'cooked', meaning: '料理する' },
+            { id: 'study', base: 'study', past: 'studied', meaning: '勉強する' },
+            { id: 'use', base: 'use', past: 'used', meaning: '使う' },
+            { id: 'visit', base: 'visit', past: 'visited', meaning: '訪れる' },
+            { id: 'stop', base: 'stop', past: 'stopped', meaning: '止まる' },
+            { id: 'listen', base: 'listen', past: 'listened', meaning: '聞く' },
+            { id: 'go', base: 'go', past: 'went', meaning: '行く' },
+            { id: 'see', base: 'see', past: 'saw', meaning: '見る・会う' },
+            { id: 'eat', base: 'eat', past: 'ate', meaning: '食べる' },
+            { id: 'have', base: 'have', past: 'had', meaning: '持つ' },
+            { id: 'buy', base: 'buy', past: 'bought', meaning: '買う' },
+            { id: 'make', base: 'make', past: 'made', meaning: '作る' },
+            { id: 'come', base: 'come', past: 'came', meaning: '来る' },
+            { id: 'write', base: 'write', past: 'wrote', meaning: '書く' },
+            { id: 'read', base: 'read', past: 'read', meaning: '読む' },
+            { id: 'run', base: 'run', past: 'ran', meaning: '走る' },
+            { id: 'swim', base: 'swim', past: 'swam', meaning: '泳ぐ' },
+            { id: 'know', base: 'know', past: 'knew', meaning: '知っている' },
+            { id: 'say', base: 'say', past: 'said', meaning: '言う' },
+            { id: 'get', base: 'get', past: 'got', meaning: '得る' },
+            { id: 'take', base: 'take', past: 'took', meaning: '取る' }
         ];
 
-        // ゲーム状態管理
+        /* =========================================
+           ゲーム状態管理
+           ========================================= */
         let gameState = {
             mode: 'choice',
             difficulty: 'normal',
@@ -210,50 +213,89 @@
             currentQIndex: 0,
             score: 0,
             combo: 0,
-            maxCombo: 0
+            maxCombo: 0,
+            newWordsCount: 0
         };
 
-        // 画面切り替え関数
+        // 図鑑データ (ローカルストレージから読み込み)
+        let collection = JSON.parse(localStorage.getItem('english_past_collection')) || [];
+
+        /* =========================================
+           図鑑システム
+           ========================================= */
+        function saveCollection() {
+            localStorage.setItem('english_past_collection', JSON.stringify(collection));
+        }
+
+        function unlockWord(wordId) {
+            if (!collection.includes(wordId)) {
+                collection.push(wordId);
+                saveCollection();
+                gameState.newWordsCount++;
+                return true; // 新規登録
+            }
+            return false;
+        }
+
+        function openZukan() {
+            switchScreen('screen-zukan');
+            const grid = document.getElementById('zukan-grid');
+            grid.innerHTML = '';
+            
+            verbsData.forEach(verb => {
+                const isUnlocked = collection.includes(verb.id);
+                const el = document.createElement('div');
+                
+                if (isUnlocked) {
+                    el.className = 'zukan-item zukan-unlocked rounded-xl p-2 shadow-md text-center';
+                    el.innerHTML = `
+                        <div class="text-xs opacity-80 mb-1">${verb.meaning}</div>
+                        <div class="font-bold">${verb.base}</div>
+                        <div class="text-yellow-200 font-bold text-sm">➡ ${verb.past}</div>
+                    `;
+                } else {
+                    el.className = 'zukan-item zukan-locked rounded-xl p-2 text-center flex flex-col justify-center items-center';
+                    el.innerHTML = `<div class="text-xl">🔒</div><div class="text-xs font-bold mt-1">???</div>`;
+                }
+                grid.appendChild(el);
+            });
+
+            // 収集率
+            const rate = Math.floor((collection.length / verbsData.length) * 100);
+            document.getElementById('collection-rate').textContent = `${rate}%`;
+        }
+
+        /* =========================================
+           画面遷移
+           ========================================= */
         function switchScreen(screenId) {
-            const screens = ['screen-start', 'screen-difficulty', 'screen-game', 'screen-feedback', 'screen-result'];
+            const screens = ['screen-start', 'screen-difficulty', 'screen-game', 'screen-feedback', 'screen-result', 'screen-zukan'];
             screens.forEach(id => {
                 const el = document.getElementById(id);
-                if (id === screenId) {
-                    el.classList.remove('hidden');
-                } else {
-                    el.classList.add('hidden');
-                }
+                if (id === screenId) el.classList.remove('hidden');
+                else el.classList.add('hidden');
             });
         }
 
-        function backToStart() {
-            switchScreen('screen-start');
-        }
+        function backToStart() { switchScreen('screen-start'); }
+        function selectMode(mode) { gameState.mode = mode; switchScreen('screen-difficulty'); }
 
-        // 1. モード選択
-        function selectMode(mode) {
-            console.log("Mode selected:", mode); // デバッグ用
-            gameState.mode = mode;
-            switchScreen('screen-difficulty');
-        }
-
-        // 2. ゲーム開始
+        /* =========================================
+           ゲームロジック
+           ========================================= */
         function startGame(difficulty) {
-            console.log("Game started:", difficulty); // デバッグ用
             gameState.difficulty = difficulty;
             gameState.score = 0;
             gameState.combo = 0;
             gameState.maxCombo = 0;
             gameState.currentQIndex = 0;
+            gameState.newWordsCount = 0;
             
-            // ランダムに10問選出
             gameState.questions = [...verbsData].sort(() => Math.random() - 0.5).slice(0, 10);
-            
             switchScreen('screen-game');
             showQuestion();
         }
 
-        // 問題表示
         function showQuestion() {
             const q = gameState.questions[gameState.currentQIndex];
             
@@ -261,19 +303,14 @@
             if (gameState.mode === 'writing') isWriting = true;
             else if (gameState.mode === 'mix') isWriting = Math.random() < 0.5;
 
-            // UI更新
             document.getElementById('verb-base').textContent = q.base;
             document.getElementById('verb-meaning').textContent = `（${q.meaning}）`;
             document.getElementById('q-difficulty').textContent = `${gameState.currentQIndex + 1}/10問目`;
             document.getElementById('score-display').textContent = gameState.score;
-            
-            const comboEl = document.getElementById('combo-display');
-            comboEl.textContent = gameState.combo > 1 ? `${gameState.combo} COMBO! 🔥` : '';
+            document.getElementById('combo-display').textContent = gameState.combo > 1 ? `${gameState.combo} COMBO! 🔥` : '';
 
-            // 入力欄リセット
             const input = document.getElementById('answer-input');
             input.value = '';
-
             const choicesDiv = document.getElementById('choices-container');
             const writingDiv = document.getElementById('writing-container');
 
@@ -288,11 +325,9 @@
             }
         }
 
-        // 選択肢生成
         function generateChoices(q, difficulty) {
             const container = document.getElementById('choices-container');
             container.innerHTML = '';
-
             let choices = [q.past];
 
             if (difficulty === 'easy') {
@@ -314,27 +349,19 @@
             });
         }
 
-        // ひっかけ選択肢生成
         function generateTrickyDistractors(q) {
             let fakes = [];
             const base = q.base;
-            
             fakes.push(base + 'ed');
             if (!base.endsWith('e')) fakes.push(base + 'd');
             if (base.endsWith('y')) fakes.push(base + 'ed');
             fakes.push(base + 'ing');
-            
-            if (base.match(/[aeiou][b-df-hj-np-tv-z]$/)) {
-                fakes.push(base + 'ed'); 
-            }
-
+            if (base.match(/[aeiou][b-df-hj-np-tv-z]$/)) fakes.push(base + 'ed'); 
             const others = verbsData.filter(v => v.base !== base).map(v => v.past);
             fakes.push(...others);
-
             return [...new Set(fakes)].filter(f => f !== q.past).sort(() => Math.random() - 0.5);
         }
 
-        // 答え合わせ
         function checkWritingAnswer() {
             const input = document.getElementById('answer-input');
             checkAnswer(input.value.trim().toLowerCase(), true);
@@ -343,15 +370,15 @@
         function checkAnswer(userAnswer, isWritingInput) {
             const q = gameState.questions[gameState.currentQIndex];
             const isCorrect = (userAnswer === q.past);
+            let newUnlocked = false;
 
             if (isCorrect) {
                 gameState.combo++;
                 if (gameState.combo > gameState.maxCombo) gameState.maxCombo = gameState.combo;
 
-                let basePoint = 0;
-                if (gameState.difficulty === 'easy') basePoint = 30;
-                else if (gameState.difficulty === 'normal') basePoint = 40;
-                else basePoint = 50;
+                let basePoint = 30; // easy
+                if (gameState.difficulty === 'normal') basePoint = 40;
+                else if (gameState.difficulty === 'hard') basePoint = 50;
 
                 if (isWritingInput) basePoint += 20;
 
@@ -362,21 +389,26 @@
 
                 const points = Math.floor(basePoint * multiplier);
                 gameState.score += points;
+                
+                // 図鑑登録
+                if (unlockWord(q.id)) {
+                    newUnlocked = true;
+                }
 
-                showFeedback(true, q.past, points, multiplier);
+                showFeedback(true, q.past, points, multiplier, newUnlocked);
             } else {
                 gameState.combo = 0;
-                showFeedback(false, q.past, 0, 1);
+                showFeedback(false, q.past, 0, 1, false);
             }
         }
 
-        function showFeedback(isCorrect, correctAnswer, points, multiplier) {
+        function showFeedback(isCorrect, correctAnswer, points, multiplier, newUnlocked) {
             document.getElementById('screen-feedback').classList.remove('hidden');
-            
             const icon = document.getElementById('fb-icon');
             const text = document.getElementById('fb-text');
             const detail = document.getElementById('fb-score-detail');
             const correctBox = document.getElementById('fb-correct-box');
+            const zukanBadge = document.getElementById('zukan-badge');
 
             if (isCorrect) {
                 icon.textContent = '⚔️';
@@ -387,6 +419,10 @@
                 if (multiplier > 1) msg += ` (x${multiplier} Combo!)`;
                 detail.textContent = msg;
                 correctBox.classList.add('hidden');
+                
+                if (newUnlocked) zukanBadge.classList.remove('hidden');
+                else zukanBadge.classList.add('hidden');
+
             } else {
                 icon.textContent = '💥';
                 text.textContent = 'Miss...';
@@ -394,39 +430,56 @@
                 detail.textContent = '';
                 correctBox.classList.remove('hidden');
                 document.getElementById('fb-correct-word').textContent = correctAnswer;
+                zukanBadge.classList.add('hidden');
             }
 
-            setTimeout(() => {
-                const btn = document.getElementById('next-btn');
-                btn.focus();
-            }, 50);
+            setTimeout(() => document.getElementById('next-btn').focus(), 50);
         }
 
         function nextQuestion() {
             document.getElementById('screen-feedback').classList.add('hidden');
             gameState.currentQIndex++;
-
-            if (gameState.currentQIndex >= 10) {
-                endGame();
-            } else {
-                showQuestion();
-            }
+            if (gameState.currentQIndex >= 10) endGame();
+            else showQuestion();
         }
 
+        /* =========================================
+           結果画面・称号
+           ========================================= */
         function endGame() {
             switchScreen('screen-result');
             document.getElementById('final-score').textContent = gameState.score;
-            document.getElementById('final-combo').textContent = `最大コンボ: ${gameState.maxCombo}`;
+            document.getElementById('final-combo').textContent = `Max Combo: ${gameState.maxCombo}`;
+            document.getElementById('final-new-words').textContent = `図鑑登録: +${gameState.newWordsCount}`;
+            
+            // 称号判定
+            const rankBadge = document.getElementById('result-rank-badge');
+            const titleEl = document.getElementById('result-title');
+            
+            let rank = 'C';
+            let title = '見習い冒険者';
+            let color = 'bg-gray-500';
+
+            // スコア基準（モードや難易度で変動するが目安として）
+            if (gameState.score >= 800) { rank = 'S'; title = '時空の覇者'; color = 'bg-yellow-400'; }
+            else if (gameState.score >= 500) { rank = 'A'; title = '過去形マスター'; color = 'bg-rose-500'; }
+            else if (gameState.score >= 300) { rank = 'B'; title = 'ベテラン戦士'; color = 'bg-blue-500'; }
+
+            rankBadge.textContent = rank;
+            rankBadge.className = `absolute -bottom-2 -right-2 ${color} text-white font-bold rounded-full w-12 h-12 flex items-center justify-center border-4 border-white text-xl shadow-lg`;
+            titleEl.textContent = `称号：${title}`;
+
             loadRanking();
         }
 
-        // ランキング系
-        const STORAGE_KEY = 'past_tense_ranking';
+        /* =========================================
+           ランキング & 共有
+           ========================================= */
+        const STORAGE_KEY = 'past_tense_ranking_full';
 
         function loadRanking() {
             const list = document.getElementById('ranking-list');
             const data = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-            
             data.sort((a, b) => b.score - a.score);
 
             if (data.length === 0) {
@@ -439,47 +492,39 @@
                 return `
                     <div class="flex justify-between bg-white/10 p-2 rounded mb-1 items-center">
                         <span class="truncate max-w-[150px]">${medal} ${r.name}</span>
-                        <span class="font-bold text-yellow-300">${r.score}</span>
+                        <div class="text-right">
+                            <span class="font-bold text-yellow-300 block">${r.score}</span>
+                            <span class="text-xs text-white/50">${r.title}</span>
+                        </div>
                     </div>
                 `;
             }).join('');
         }
 
         function saveScore() {
-            const nameInput = document.getElementById('player-name');
-            const name = nameInput.value.trim() || '名無し';
+            const name = document.getElementById('player-name').value.trim() || '名無し';
+            const title = document.getElementById('result-title').textContent.replace('称号：', '');
             
             const data = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-            data.push({
-                name: name,
-                score: gameState.score,
-                date: new Date().toISOString()
-            });
-            
+            data.push({ name: name, score: gameState.score, title: title, date: new Date().toISOString() });
             localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-            alert('スコアを保存しました！');
+            alert('保存しました！');
             loadRanking();
-            // 重複保存防止のためボタンを無効化する処理を入れても良いですが、今回はシンプルに
         }
 
         function showRanking() {
             switchScreen('screen-result');
-            // 結果画面のスコア表示を隠す、または「ランキング閲覧モード」として扱う
             document.getElementById('final-score').textContent = '-';
-            document.getElementById('final-combo').textContent = '';
+            document.getElementById('result-rank-badge').classList.add('hidden');
             loadRanking();
         }
 
         function shareResult() {
-            const text = `英語過去形クエストで ${gameState.score}点 をとったよ！\nモード: ${gameState.mode} / 難易度: ${gameState.difficulty}\n#英語学習`;
-            navigator.clipboard.writeText(text).then(() => {
-                alert('結果をコピーしました！友達に送ろう！');
-            }).catch(err => {
-                alert('コピーに失敗しました。');
-            });
+            const title = document.getElementById('result-title').textContent;
+            const text = `英語過去形クエストで ${gameState.score}点！\n${title} を獲得！\n#英語学習`;
+            navigator.clipboard.writeText(text).then(() => alert('コピーしました！'));
         }
 
-        // キーボード操作
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
                 if (!document.getElementById('screen-feedback').classList.contains('hidden')) {
