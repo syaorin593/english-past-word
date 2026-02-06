@@ -3,24 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>英語過去形マスター</title>
+    <title>英語過去形クエスト</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=M+PLUS+Rounded+1c:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    
+    <style>
+        /* CSSスタイル設定 */
+        body {
+            font-family: 'M PLUS Rounded 1c', sans-serif;
+            touch-action: manipulation; /* スマホでのタップ遅延防止 */
+        }
+        .title-font {
+            font-family: 'Dela Gothic One', cursive;
+        }
+
+        /* 背景設定 */
+        .star-bg {
+            background: linear-gradient(135deg, #0f172a 0%, #312e81 50%, #1e1b4b 100%);
+        }
+
+        /* カードとボタンのデザイン */
+        .game-card {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        .choice-btn {
+            transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+            touch-action: manipulation;
+        }
+        .choice-btn:active {
+            transform: translateY(2px);
+            border-bottom-width: 0px;
+            margin-top: 4px; /* 位置調整 */
+        }
+
+        /* アニメーション定義 */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
+        }
+        .animate-shake {
+            animation: shake 0.3s ease-in-out;
+        }
+
+        @keyframes pop {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .animate-pop {
+            animation: pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        /* Tailwind読み込み前のちらつき防止 */
+        .hidden { display: none !important; }
+    </style>
 </head>
-<body class="h-full star-bg overflow-auto text-white selection:bg-purple-500 selection:text-white">
+<body class="h-full star-bg overflow-auto text-white selection:bg-purple-500 selection:text-white min-h-screen">
 
     <div id="app" class="min-h-screen w-full max-w-2xl mx-auto p-4 flex flex-col items-center justify-center">
 
         <div id="screen-start" class="w-full text-center animate-pop">
             <div class="text-7xl mb-4 drop-shadow-lg">🏰</div>
-            <h1 class="title-font text-4xl md:text-5xl mb-6 text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 to-yellow-500 drop-shadow-sm">
+            <h1 class="title-font text-4xl md:text-5xl mb-6 text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 to-yellow-500 drop-shadow-sm leading-tight pb-2">
                 英語過去形<br>クエスト
             </h1>
             
             <div class="bg-white/10 backdrop-blur-md rounded-3xl p-6 mb-8 border border-white/10">
                 <h2 class="text-indigo-200 font-bold mb-4">出題モードを選択</h2>
-                <div class="space-y-3">
+                <div class="space-y-4">
                     <button onclick="selectMode('choice')" class="w-full py-4 bg-gradient-to-r from-cyan-500 to-blue-600 font-bold rounded-2xl choice-btn text-xl shadow-lg border-b-4 border-blue-800">
                         🎯 4択モード
                     </button>
@@ -33,23 +85,23 @@
                 </div>
             </div>
 
-            <button onclick="showRanking()" class="text-yellow-300 font-bold hover:underline">🏆 ランキングを見る</button>
+            <button onclick="showRanking()" class="text-yellow-300 font-bold hover:underline py-2">🏆 ランキングを見る</button>
         </div>
 
         <div id="screen-difficulty" class="w-full max-w-md text-center hidden animate-pop">
             <h2 class="title-font text-3xl mb-6">難易度を選べ！</h2>
             <div class="space-y-4">
-                <button onclick="startGame('easy')" class="w-full py-4 bg-emerald-500 hover:bg-emerald-400 font-bold rounded-2xl choice-btn border-b-4 border-emerald-700">
+                <button onclick="startGame('easy')" class="w-full py-4 bg-emerald-500 hover:bg-emerald-400 font-bold rounded-2xl choice-btn border-b-4 border-emerald-700 text-lg">
                     🌱 初級 (基本点 30)
                 </button>
-                <button onclick="startGame('normal')" class="w-full py-4 bg-amber-500 hover:bg-amber-400 font-bold rounded-2xl choice-btn border-b-4 border-amber-700">
+                <button onclick="startGame('normal')" class="w-full py-4 bg-amber-500 hover:bg-amber-400 font-bold rounded-2xl choice-btn border-b-4 border-amber-700 text-lg">
                     ⚔️ 中級 (基本点 40)
                 </button>
-                <button onclick="startGame('hard')" class="w-full py-4 bg-red-600 hover:bg-red-500 font-bold rounded-2xl choice-btn border-b-4 border-red-800">
+                <button onclick="startGame('hard')" class="w-full py-4 bg-red-600 hover:bg-red-500 font-bold rounded-2xl choice-btn border-b-4 border-red-800 text-lg">
                     💀 上級 (基本点 50)
                 </button>
             </div>
-            <button onclick="backToStart()" class="mt-8 text-indigo-200 hover:text-white">↩ 戻る</button>
+            <button onclick="backToStart()" class="mt-8 text-indigo-200 hover:text-white py-2">↩ 戻る</button>
         </div>
 
         <div id="screen-game" class="w-full max-w-md hidden">
@@ -65,20 +117,20 @@
             </div>
 
             <div id="question-card" class="game-card rounded-3xl p-8 mb-6 text-center relative overflow-hidden border-b-8 border-indigo-700">
-                <span id="q-difficulty" class="text-xs font-bold bg-black/30 px-3 py-1 rounded-full mb-4 inline-block uppercase">Normal</span>
-                <h2 id="verb-base" class="title-font text-5xl mb-3 drop-shadow-md">play</h2>
+                <span id="q-difficulty" class="text-xs font-bold bg-black/30 px-3 py-1 rounded-full mb-4 inline-block uppercase">Question 1</span>
+                <h2 id="verb-base" class="title-font text-5xl mb-3 drop-shadow-md break-words">play</h2>
                 <p id="verb-meaning" class="text-white/80 text-lg font-bold">（〜をする）</p>
             </div>
 
-            <div id="choices-container" class="grid grid-cols-2 gap-4 hidden"></div>
+            <div id="choices-container" class="grid grid-cols-1 sm:grid-cols-2 gap-4 hidden"></div>
 
             <div id="writing-container" class="hidden">
-                <input type="text" id="answer-input" class="w-full p-4 rounded-xl bg-white text-slate-800 text-center text-2xl font-bold outline-none ring-4 ring-transparent focus:ring-yellow-400 mb-4" placeholder="過去形を入力" autocomplete="off">
-                <button onclick="checkWritingAnswer()" class="w-full py-4 bg-indigo-500 text-white font-bold rounded-xl shadow-lg border-b-4 border-indigo-700">決定</button>
+                <input type="text" id="answer-input" class="w-full p-4 rounded-xl bg-white text-slate-800 text-center text-2xl font-bold outline-none ring-4 ring-transparent focus:ring-yellow-400 mb-4" placeholder="過去形を入力" autocomplete="off" autocapitalize="off">
+                <button onclick="checkWritingAnswer()" class="w-full py-4 bg-indigo-500 text-white font-bold rounded-xl shadow-lg border-b-4 border-indigo-700 active:border-b-0 active:mt-1">決定</button>
             </div>
         </div>
 
-        <div id="screen-feedback" class="fixed inset-0 flex items-center justify-center bg-black/80 z-50 hidden backdrop-blur-sm">
+        <div id="screen-feedback" class="fixed inset-0 flex items-center justify-center bg-black/80 z-50 hidden backdrop-blur-sm px-4">
             <div class="text-center w-full max-w-sm p-6 animate-pop">
                 <div id="fb-icon" class="text-8xl mb-4 filter drop-shadow-lg">✨</div>
                 <h2 id="fb-text" class="title-font text-4xl text-white mb-2">Great!</h2>
@@ -89,7 +141,7 @@
                     <p id="fb-correct-word" class="text-3xl font-bold text-white">played</p>
                 </div>
 
-                <button id="next-btn" onclick="nextQuestion()" class="w-full py-4 bg-white text-indigo-900 font-bold rounded-2xl text-xl shadow-lg border-b-4 border-gray-300">次へ (Enter)</button>
+                <button id="next-btn" onclick="nextQuestion()" class="w-full py-4 bg-white text-indigo-900 font-bold rounded-2xl text-xl shadow-lg border-b-4 border-gray-300 active:border-b-0 active:translate-y-1">次へ (Enter)</button>
             </div>
         </div>
 
@@ -105,15 +157,15 @@
 
             <div class="flex gap-2 mb-6">
                 <input type="text" id="player-name" placeholder="名前を入力" class="flex-1 p-3 rounded-xl text-black">
-                <button onclick="saveScore()" class="bg-green-500 px-4 rounded-xl font-bold shadow-lg border-b-4 border-green-700">保存</button>
+                <button onclick="saveScore()" class="bg-green-500 px-4 rounded-xl font-bold shadow-lg border-b-4 border-green-700 active:border-b-0 active:translate-y-1">保存</button>
             </div>
 
             <div class="space-y-3">
-                <button onclick="shareResult()" class="w-full py-3 bg-blue-500 font-bold rounded-xl border-b-4 border-blue-700">📋 結果をコピーして共有</button>
-                <button onclick="backToStart()" class="w-full py-3 bg-white/20 font-bold rounded-xl">🏠 タイトルへ</button>
+                <button onclick="shareResult()" class="w-full py-3 bg-blue-500 font-bold rounded-xl border-b-4 border-blue-700 active:border-b-0 active:translate-y-1">📋 結果をコピーして共有</button>
+                <button onclick="backToStart()" class="w-full py-3 bg-white/20 font-bold rounded-xl active:bg-white/30">🏠 タイトルへ</button>
             </div>
 
-            <div class="mt-8 text-left">
+            <div class="mt-8 text-left bg-black/20 p-4 rounded-xl">
                 <h3 class="text-yellow-300 font-bold mb-2 border-b border-white/20 pb-1">🏅 ローカルランキング</h3>
                 <div id="ranking-list" class="space-y-2 text-sm"></div>
             </div>
@@ -121,6 +173,325 @@
 
     </div>
 
-    <script src="script.js"></script>
+    <script>
+        /* =========================================
+           JavaScriptロジック
+           ========================================= */
+        
+        // 単語データ
+        const verbsData = [
+            { base: 'play', past: 'played', meaning: '遊ぶ' },
+            { base: 'watch', past: 'watched', meaning: '見る' },
+            { base: 'cook', past: 'cooked', meaning: '料理する' },
+            { base: 'study', past: 'studied', meaning: '勉強する' },
+            { base: 'use', past: 'used', meaning: '使う' },
+            { base: 'visit', past: 'visited', meaning: '訪れる' },
+            { base: 'stop', past: 'stopped', meaning: '止まる' },
+            { base: 'go', past: 'went', meaning: '行く' },
+            { base: 'see', past: 'saw', meaning: '見る・会う' },
+            { base: 'eat', past: 'ate', meaning: '食べる' },
+            { base: 'have', past: 'had', meaning: '持つ' },
+            { base: 'buy', past: 'bought', meaning: '買う' },
+            { base: 'make', past: 'made', meaning: '作る' },
+            { base: 'come', past: 'came', meaning: '来る' },
+            { base: 'write', past: 'wrote', meaning: '書く' },
+            { base: 'read', past: 'read', meaning: '読む' },
+            { base: 'run', past: 'ran', meaning: '走る' },
+            { base: 'swim', past: 'swam', meaning: '泳ぐ' },
+            { base: 'know', past: 'knew', meaning: '知っている' },
+            { base: 'say', past: 'said', meaning: '言う' }
+        ];
+
+        // ゲーム状態管理
+        let gameState = {
+            mode: 'choice',
+            difficulty: 'normal',
+            questions: [],
+            currentQIndex: 0,
+            score: 0,
+            combo: 0,
+            maxCombo: 0
+        };
+
+        // 画面切り替え関数
+        function switchScreen(screenId) {
+            const screens = ['screen-start', 'screen-difficulty', 'screen-game', 'screen-feedback', 'screen-result'];
+            screens.forEach(id => {
+                const el = document.getElementById(id);
+                if (id === screenId) {
+                    el.classList.remove('hidden');
+                } else {
+                    el.classList.add('hidden');
+                }
+            });
+        }
+
+        function backToStart() {
+            switchScreen('screen-start');
+        }
+
+        // 1. モード選択
+        function selectMode(mode) {
+            console.log("Mode selected:", mode); // デバッグ用
+            gameState.mode = mode;
+            switchScreen('screen-difficulty');
+        }
+
+        // 2. ゲーム開始
+        function startGame(difficulty) {
+            console.log("Game started:", difficulty); // デバッグ用
+            gameState.difficulty = difficulty;
+            gameState.score = 0;
+            gameState.combo = 0;
+            gameState.maxCombo = 0;
+            gameState.currentQIndex = 0;
+            
+            // ランダムに10問選出
+            gameState.questions = [...verbsData].sort(() => Math.random() - 0.5).slice(0, 10);
+            
+            switchScreen('screen-game');
+            showQuestion();
+        }
+
+        // 問題表示
+        function showQuestion() {
+            const q = gameState.questions[gameState.currentQIndex];
+            
+            let isWriting = false;
+            if (gameState.mode === 'writing') isWriting = true;
+            else if (gameState.mode === 'mix') isWriting = Math.random() < 0.5;
+
+            // UI更新
+            document.getElementById('verb-base').textContent = q.base;
+            document.getElementById('verb-meaning').textContent = `（${q.meaning}）`;
+            document.getElementById('q-difficulty').textContent = `${gameState.currentQIndex + 1}/10問目`;
+            document.getElementById('score-display').textContent = gameState.score;
+            
+            const comboEl = document.getElementById('combo-display');
+            comboEl.textContent = gameState.combo > 1 ? `${gameState.combo} COMBO! 🔥` : '';
+
+            // 入力欄リセット
+            const input = document.getElementById('answer-input');
+            input.value = '';
+
+            const choicesDiv = document.getElementById('choices-container');
+            const writingDiv = document.getElementById('writing-container');
+
+            if (isWriting) {
+                choicesDiv.classList.add('hidden');
+                writingDiv.classList.remove('hidden');
+                setTimeout(() => input.focus(), 100);
+            } else {
+                writingDiv.classList.add('hidden');
+                choicesDiv.classList.remove('hidden');
+                generateChoices(q, gameState.difficulty);
+            }
+        }
+
+        // 選択肢生成
+        function generateChoices(q, difficulty) {
+            const container = document.getElementById('choices-container');
+            container.innerHTML = '';
+
+            let choices = [q.past];
+
+            if (difficulty === 'easy') {
+                const others = verbsData.filter(v => v.base !== q.base).map(v => v.past);
+                choices.push(...others.sort(() => Math.random() - 0.5).slice(0, 3));
+            } else {
+                const distractors = generateTrickyDistractors(q);
+                choices.push(...distractors.slice(0, 3));
+            }
+
+            choices.sort(() => Math.random() - 0.5);
+
+            choices.forEach(choice => {
+                const btn = document.createElement('button');
+                btn.className = "choice-btn w-full py-4 bg-white/90 hover:bg-white text-indigo-900 text-xl font-bold rounded-xl shadow-lg border-b-4 border-indigo-200 active:border-b-0 active:translate-y-1";
+                btn.textContent = choice;
+                btn.onclick = () => checkAnswer(choice, false);
+                container.appendChild(btn);
+            });
+        }
+
+        // ひっかけ選択肢生成
+        function generateTrickyDistractors(q) {
+            let fakes = [];
+            const base = q.base;
+            
+            fakes.push(base + 'ed');
+            if (!base.endsWith('e')) fakes.push(base + 'd');
+            if (base.endsWith('y')) fakes.push(base + 'ed');
+            fakes.push(base + 'ing');
+            
+            if (base.match(/[aeiou][b-df-hj-np-tv-z]$/)) {
+                fakes.push(base + 'ed'); 
+            }
+
+            const others = verbsData.filter(v => v.base !== base).map(v => v.past);
+            fakes.push(...others);
+
+            return [...new Set(fakes)].filter(f => f !== q.past).sort(() => Math.random() - 0.5);
+        }
+
+        // 答え合わせ
+        function checkWritingAnswer() {
+            const input = document.getElementById('answer-input');
+            checkAnswer(input.value.trim().toLowerCase(), true);
+        }
+
+        function checkAnswer(userAnswer, isWritingInput) {
+            const q = gameState.questions[gameState.currentQIndex];
+            const isCorrect = (userAnswer === q.past);
+
+            if (isCorrect) {
+                gameState.combo++;
+                if (gameState.combo > gameState.maxCombo) gameState.maxCombo = gameState.combo;
+
+                let basePoint = 0;
+                if (gameState.difficulty === 'easy') basePoint = 30;
+                else if (gameState.difficulty === 'normal') basePoint = 40;
+                else basePoint = 50;
+
+                if (isWritingInput) basePoint += 20;
+
+                let multiplier = 1.0;
+                if (gameState.combo >= 8) multiplier = 2.5;
+                else if (gameState.combo >= 5) multiplier = 2.0;
+                else if (gameState.combo >= 3) multiplier = 1.5;
+
+                const points = Math.floor(basePoint * multiplier);
+                gameState.score += points;
+
+                showFeedback(true, q.past, points, multiplier);
+            } else {
+                gameState.combo = 0;
+                showFeedback(false, q.past, 0, 1);
+            }
+        }
+
+        function showFeedback(isCorrect, correctAnswer, points, multiplier) {
+            document.getElementById('screen-feedback').classList.remove('hidden');
+            
+            const icon = document.getElementById('fb-icon');
+            const text = document.getElementById('fb-text');
+            const detail = document.getElementById('fb-score-detail');
+            const correctBox = document.getElementById('fb-correct-box');
+
+            if (isCorrect) {
+                icon.textContent = '⚔️';
+                text.textContent = 'Nice!';
+                text.className = "title-font text-4xl text-yellow-300 mb-2";
+                
+                let msg = `+${points} pts`;
+                if (multiplier > 1) msg += ` (x${multiplier} Combo!)`;
+                detail.textContent = msg;
+                correctBox.classList.add('hidden');
+            } else {
+                icon.textContent = '💥';
+                text.textContent = 'Miss...';
+                text.className = "title-font text-4xl text-rose-300 mb-2";
+                detail.textContent = '';
+                correctBox.classList.remove('hidden');
+                document.getElementById('fb-correct-word').textContent = correctAnswer;
+            }
+
+            setTimeout(() => {
+                const btn = document.getElementById('next-btn');
+                btn.focus();
+            }, 50);
+        }
+
+        function nextQuestion() {
+            document.getElementById('screen-feedback').classList.add('hidden');
+            gameState.currentQIndex++;
+
+            if (gameState.currentQIndex >= 10) {
+                endGame();
+            } else {
+                showQuestion();
+            }
+        }
+
+        function endGame() {
+            switchScreen('screen-result');
+            document.getElementById('final-score').textContent = gameState.score;
+            document.getElementById('final-combo').textContent = `最大コンボ: ${gameState.maxCombo}`;
+            loadRanking();
+        }
+
+        // ランキング系
+        const STORAGE_KEY = 'past_tense_ranking';
+
+        function loadRanking() {
+            const list = document.getElementById('ranking-list');
+            const data = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+            
+            data.sort((a, b) => b.score - a.score);
+
+            if (data.length === 0) {
+                list.innerHTML = '<p class="text-white/50 text-center">まだ記録がありません</p>';
+                return;
+            }
+
+            list.innerHTML = data.slice(0, 5).map((r, i) => {
+                const medal = ['🥇','🥈','🥉'][i] || `${i+1}位`;
+                return `
+                    <div class="flex justify-between bg-white/10 p-2 rounded mb-1 items-center">
+                        <span class="truncate max-w-[150px]">${medal} ${r.name}</span>
+                        <span class="font-bold text-yellow-300">${r.score}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function saveScore() {
+            const nameInput = document.getElementById('player-name');
+            const name = nameInput.value.trim() || '名無し';
+            
+            const data = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+            data.push({
+                name: name,
+                score: gameState.score,
+                date: new Date().toISOString()
+            });
+            
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            alert('スコアを保存しました！');
+            loadRanking();
+            // 重複保存防止のためボタンを無効化する処理を入れても良いですが、今回はシンプルに
+        }
+
+        function showRanking() {
+            switchScreen('screen-result');
+            // 結果画面のスコア表示を隠す、または「ランキング閲覧モード」として扱う
+            document.getElementById('final-score').textContent = '-';
+            document.getElementById('final-combo').textContent = '';
+            loadRanking();
+        }
+
+        function shareResult() {
+            const text = `英語過去形クエストで ${gameState.score}点 をとったよ！\nモード: ${gameState.mode} / 難易度: ${gameState.difficulty}\n#英語学習`;
+            navigator.clipboard.writeText(text).then(() => {
+                alert('結果をコピーしました！友達に送ろう！');
+            }).catch(err => {
+                alert('コピーに失敗しました。');
+            });
+        }
+
+        // キーボード操作
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                if (!document.getElementById('screen-feedback').classList.contains('hidden')) {
+                    nextQuestion();
+                    return;
+                }
+                if (!document.getElementById('screen-game').classList.contains('hidden') && 
+                    !document.getElementById('writing-container').classList.contains('hidden')) {
+                    checkWritingAnswer();
+                }
+            }
+        });
+    </script>
 </body>
 </html>
