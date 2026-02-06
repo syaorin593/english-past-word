@@ -217,7 +217,7 @@
             newWordsCount: 0
         };
 
-        // 図鑑データ (ローカルストレージから読み込み)
+        // 図鑑データ
         let collection = JSON.parse(localStorage.getItem('english_past_collection')) || [];
 
         /* =========================================
@@ -232,7 +232,7 @@
                 collection.push(wordId);
                 saveCollection();
                 gameState.newWordsCount++;
-                return true; // 新規登録
+                return true;
             }
             return false;
         }
@@ -433,9 +433,14 @@
                 zukanBadge.classList.add('hidden');
             }
 
+            // フォーカスをボタンへ（キーボード操作用）
             setTimeout(() => document.getElementById('next-btn').focus(), 50);
         }
 
+        /* * バグ修正：2重発火防止
+         * Enterキーを押した際、デフォルトのボタンクリック動作をキャンセルし、
+         * 明示的に nextQuestion() だけを呼ぶように変更
+         */
         function nextQuestion() {
             document.getElementById('screen-feedback').classList.add('hidden');
             gameState.currentQIndex++;
@@ -460,7 +465,6 @@
             let title = '見習い冒険者';
             let color = 'bg-gray-500';
 
-            // スコア基準（モードや難易度で変動するが目安として）
             if (gameState.score >= 800) { rank = 'S'; title = '時空の覇者'; color = 'bg-yellow-400'; }
             else if (gameState.score >= 500) { rank = 'A'; title = '過去形マスター'; color = 'bg-rose-500'; }
             else if (gameState.score >= 300) { rank = 'B'; title = 'ベテラン戦士'; color = 'bg-blue-500'; }
@@ -525,12 +529,18 @@
             navigator.clipboard.writeText(text).then(() => alert('コピーしました！'));
         }
 
+        /* * バグ修正：2重発火防止のキーボード処理
+         */
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
+                // フィードバック画面が出ている場合
                 if (!document.getElementById('screen-feedback').classList.contains('hidden')) {
+                    e.preventDefault(); // これで2回実行されるのを防ぐ
                     nextQuestion();
                     return;
                 }
+                
+                // ゲーム画面でライティング入力中の場合
                 if (!document.getElementById('screen-game').classList.contains('hidden') && 
                     !document.getElementById('writing-container').classList.contains('hidden')) {
                     checkWritingAnswer();
